@@ -1,0 +1,29 @@
+{
+  "_说明": "改完这个文件要重启服务（Ctrl+C 再 node server.js）",
+
+  "port": 8788,
+  "host": "0.0.0.0",
+  "publicUrl": "http://127.0.0.1:8788",
+
+  "_抽题": "每次随机抽几题 / 及格线 / 必答区正确率下限",
+  "drawCount": 10,
+  "passScore": 60,
+  "corePassRate": 0,
+
+  "_管理密钥": "管理接口（看名单、统计）要带这个 token，务必改掉",
+  "adminToken": "change-me-please",
+
+  "_QQ机器人": {
+    "enabled": true,
+    "_platform": "onebot11 = NapCat / Lagrange / go-cqhttp 等协议端",
+    "triggerKeywords": ["答题", "群规", "考试", "quiz"],
+    "_httpApi": "OneBot 的 HTTP API 地址，例如 http://127.0.0.1:3000（反向 WS 时可不填）",
+    "httpApi": "",
+    "_accessToken": "OneBot 的 access_token，没有就留空",
+    "accessToken": "",
+    "_notifyGroupId": "结果通知发到哪个群（留空则回原群）",
+    "notifyGroupId": "",
+    "_callbackUrl": "也可以再往别的地址推一份结果（企业微信/飞书/自建服务），留空不用",
+    "callbackUrl": ""
+  }
+}
