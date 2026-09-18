@@ -1,0 +1,9 @@
+﻿# ===== 成绩记录：含 QQ 号与昵称，绝对不要公开 =====
+服务端/results.jsonl
+*.jsonl
+
+# ===== 系统 / 编辑器 =====
+Thumbs.db
+desktop.ini
+.DS_Store
+*.log
