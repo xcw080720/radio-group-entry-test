@@ -1,6 +1,6 @@
 /* 题库数据校验：只读，跑完即删 */
 const fs = require('fs');
-const p = 'C:/Users/辰苇/group-rules-quiz/群规问卷.html';
+const p = require('path').join(__dirname, '群规问卷.html');
 const html = fs.readFileSync(p, 'utf8');
 const m = html.match(/const QUESTIONS = (\[[\s\S]*?\n\]);/);
 if (!m) { console.log('❌ 未找到 QUESTIONS 数组'); process.exit(1); }
