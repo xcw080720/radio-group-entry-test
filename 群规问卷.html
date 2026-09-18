@@ -1,0 +1,1593 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>群规准入测验 · 半间猫窝</title>
+<style>
+/* ============================================================
+   群规准入测验 · 单文件 H5
+   题型：单选 / 多选 / 判断 / 挖空填词 / 情景运用
+   题库依据：《半间猫窝（Cat Ham、小猫Ham）群规》修订3
+   ============================================================ */
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+  background:linear-gradient(165deg,#eef2ff 0%,#f8fafc 45%,#f1f5f9 100%);
+  background-attachment:fixed;color:#0f172a;min-height:100vh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;line-height:1.6;
+}
+#app{max-width:680px;width:100%;margin:0 auto;padding:0 16px 40px;position:relative}
+.screen{display:none;animation:fadeUp .34s cubic-bezier(.22,.9,.3,1)}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.card{background:#fff;border-radius:20px;padding:24px 20px;box-shadow:0 2px 4px rgba(15,23,42,.03),0 12px 32px -8px rgba(15,23,42,.10);margin-top:18px}
+h1{font-size:26px;line-height:1.3;margin:0 0 6px;letter-spacing:-.02em;font-weight:800}
+h2{font-size:15px;margin:0 0 14px;font-weight:700;color:#334155}
+.sub{color:#64748b;font-size:14px;margin:0}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px 20px;border:0;border-radius:14px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;box-shadow:0 6px 18px -6px rgba(79,70,229,.6);transition:transform .12s,opacity .12s}
+.btn:active{transform:scale(.975)}
+.btn:disabled{opacity:.4;box-shadow:none;cursor:not-allowed}
+.btn.ghost{background:#f1f5f9;color:#475569;box-shadow:none;font-weight:600}
+
+/* 开始页 */
+.hero{text-align:center;padding:44px 12px 22px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.08em;color:#4f46e5;background:#eef2ff;border:1px solid #e0e7ff;padding:5px 12px;border-radius:99px;margin-bottom:16px}
+.hero h1{font-size:29px}
+.hero .sub{margin-top:8px;font-size:14.5px;line-height:1.6}
+.meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:22px}
+.meta div{background:#f8fafc;border:1px solid #eef2f7;border-radius:14px;padding:12px 4px;text-align:center;overflow:hidden}
+.meta b{display:block;font-size:21px;color:#4f46e5;font-weight:800;line-height:1.2}
+.meta span{font-size:11px;color:#94a3b8;font-weight:600;white-space:nowrap}
+.field{margin-top:22px;text-align:left}
+.field label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:8px}
+.field input{width:100%;padding:15px 16px;border:1.5px solid #e2e8f0;border-radius:14px;font-size:16px;font-family:inherit;color:#0f172a;background:#f8fafc;transition:border-color .15s,background .15s;outline:none}
+.field input:focus{border-color:#6366f1;background:#fff}
+.field input:disabled{color:#475569;background:#f1f5f9}
+.hint{font-size:12px;color:#94a3b8;margin-top:8px;line-height:1.5}
+.notice{margin-top:14px;padding:13px 15px;border-radius:13px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;font-size:12.5px;line-height:1.7}
+.notice b{color:#78350f}
+.typelist{margin-top:16px;display:flex;flex-wrap:wrap;gap:7px}
+.typelist span{font-size:11.5px;font-weight:700;color:#475569;background:#f1f5f9;border-radius:8px;padding:5px 10px}
+
+/* 答题页 */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(248,250,252,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:20px 16px 12px;margin:0 -16px}
+.barline{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px;font-weight:700;color:#64748b;margin-bottom:24px}
+.barline .timer{color:#ef4444;font-variant-numeric:tabular-nums}
+.sheetbtn{font-family:inherit;font-size:12px;font-weight:800;color:#4f46e5;background:#eef2ff;border:1px solid #e0e7ff;border-radius:9px;padding:5px 11px;cursor:pointer}
+.track{height:7px;background:#e2e8f0;border-radius:99px;overflow:hidden}
+.track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#818cf8,#4f46e5);transition:width .3s}
+.qhead{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.chip{font-size:11px;font-weight:800;letter-spacing:.04em;padding:4px 9px;border-radius:7px;background:#eef2ff;color:#4f46e5;white-space:nowrap}
+.chip.multi{background:#fef3c7;color:#b45309}
+.chip.judge{background:#dcfce7;color:#15803d}
+.chip.fill{background:#fce7f3;color:#be185d}
+.chip.scene{background:#e0f2fe;color:#0369a1}
+.chip.case{background:#ede9fe;color:#6d28d9}
+.chip.sec{background:#f1f5f9;color:#64748b}
+.qnum{font-size:11px;font-weight:800;color:#cbd5e1;letter-spacing:.1em;margin-left:auto}
+.qtext{font-size:17px;font-weight:700;line-height:1.65;margin:0 0 20px;letter-spacing:-.01em}
+.opts{display:flex;flex-direction:column;gap:11px}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:15px 16px;border:1.5px solid #e8edf3;border-radius:15px;background:#fff;cursor:pointer;user-select:none;transition:border-color .14s,background .14s,transform .1s}
+.opt:active{transform:scale(.99)}
+.opt .box{flex:0 0 21px;width:21px;height:21px;margin-top:1px;border:2px solid #cbd5e1;border-radius:50%;position:relative;transition:all .14s}
+.opt.multi .box{border-radius:7px}
+.opt .box::after{content:"";position:absolute;inset:0;margin:auto;width:9px;height:9px;border-radius:50%;background:#fff;transform:scale(0);transition:transform .14s}
+.opt.multi .box::after{width:11px;height:11px;border-radius:0;background:transparent;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;margin:0;left:4px;top:5px;transform:rotate(-45deg) scale(0)}
+.opt.selected{border-color:#6366f1;background:#f5f6ff}
+.opt.selected .box{border-color:#4f46e5;background:#4f46e5}
+.opt.selected .box::after{transform:scale(1)}
+.opt.multi.selected .box::after{transform:rotate(-45deg) scale(1)}
+.opt .txt{flex:1;font-size:15px;line-height:1.55;color:#1e293b;word-break:break-word}
+.opt.selected .txt{color:#312e81;font-weight:600}
+
+/* 填词 */
+.fillwrap{display:flex;flex-direction:column;gap:10px}
+.fillinput{width:100%;padding:17px 18px;border:2px solid #e8edf3;border-radius:15px;font-size:17px;font-weight:600;font-family:inherit;color:#1e293b;background:#f8fafc;outline:none;transition:border-color .15s,background .15s,box-shadow .15s;letter-spacing:.02em}
+.fillinput::placeholder{color:#cbd5e1;font-weight:500}
+.fillinput:focus{border-color:#6366f1;background:#fff;box-shadow:0 0 0 4px rgba(99,102,241,.10)}
+.filltip{font-size:12px;color:#94a3b8;text-align:center;line-height:1.6}
+
+.footbar{position:sticky;bottom:0;z-index:20;display:flex;gap:11px;padding:14px 16px max(14px,env(safe-area-inset-bottom));margin:0 -16px;background:linear-gradient(180deg,rgba(248,250,252,0),rgba(248,250,252,.97) 30%)}
+.footbar .btn{flex:1}
+.footbar .btn.prev{flex:0 0 96px;white-space:nowrap;padding-left:10px;padding-right:10px}
+
+/* 答题卡 */
+.mask{position:fixed;inset:0;background:rgba(15,23,42,.42);opacity:0;pointer-events:none;transition:opacity .26s;z-index:55}
+.mask.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-radius:22px 22px 0 0;transform:translateY(101%);transition:transform .3s cubic-bezier(.22,.9,.3,1);max-height:78vh;display:flex;flex-direction:column;box-shadow:0 -10px 44px rgba(15,23,42,.2)}
+.sheet.open{transform:none}
+.sheet-hd{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;border-bottom:1px solid #f1f5f9;flex:0 0 auto}
+.sheet-hd b{font-size:15px;font-weight:800}
+.sheet-hd .st{font-size:12px;color:#94a3b8;font-weight:700;margin-left:8px}
+.sheet-hd button{font-family:inherit;border:0;background:#f1f5f9;color:#475569;font-size:13px;font-weight:700;border-radius:9px;padding:7px 13px;cursor:pointer}
+.legend{display:flex;gap:14px;padding:10px 20px 4px;font-size:11.5px;color:#94a3b8;font-weight:700;flex:0 0 auto}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:5px;vertical-align:-1px}
+.legend .l1 i{background:#4f46e5}
+.legend .l2 i{background:#eef2ff;border:1px solid #c7d2fe}
+.legend .l3 i{background:#f8fafc;border:1px solid #e2e8f0}
+.cardgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:8px;padding:12px 20px max(22px,env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch}
+.cg{height:46px;border-radius:12px;border:1.5px solid #e2e8f0;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#94a3b8;cursor:pointer;font-family:inherit;transition:transform .1s}
+.cg:active{transform:scale(.94)}
+.cg.done{background:#eef2ff;border-color:#c7d2fe;color:#4f46e5}
+.cg.cur{background:#4f46e5;border-color:#4f46e5;color:#fff;box-shadow:0 4px 12px -3px rgba(79,70,229,.6)}
+
+/* 结果页 */
+.result-hero{text-align:center;padding:28px 12px 20px}
+.seal{width:92px;height:92px;margin:0 auto 18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:46px;font-weight:900;color:#fff;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+.seal.pass{background:linear-gradient(135deg,#34d399,#059669);box-shadow:0 12px 32px -10px rgba(16,185,129,.75)}
+.seal.fail{background:linear-gradient(135deg,#fb7185,#e11d48);box-shadow:0 12px 32px -10px rgba(225,29,72,.65)}
+.score{font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.score.pass{color:#059669}.score.fail{color:#e11d48}
+.score small{font-size:19px;font-weight:700;color:#94a3b8;margin-left:3px}
+.result-hero p{margin:10px 0 0;font-size:14.5px;color:#64748b;line-height:1.65}
+.conds{display:flex;flex-direction:column;gap:9px;margin-top:18px}
+.cond{display:flex;align-items:center;gap:11px;padding:13px 15px;border-radius:13px;background:#f8fafc;border:1px solid #eef2f7;font-size:13.5px;text-align:left}
+.cond .ok{flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#10b981;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900}
+.cond .no{flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#f43f5e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900}
+.cond b{font-weight:800;color:#1e293b}
+.cond span{color:#94a3b8;font-size:12.5px;margin-left:auto;white-space:nowrap;font-weight:700}
+.ticket{border-radius:18px;padding:20px;margin-top:18px;background:linear-gradient(150deg,#f8faff,#f1f4ff);border:1.5px dashed #c7d2fe}
+.ticket.pass{border-color:#a7f3d0;background:linear-gradient(150deg,#f4fdf9,#ecfdf5)}
+.ticket.fail{border-color:#fecdd3;background:linear-gradient(150deg,#fff5f6,#fff1f2)}
+.ticket .tt{font-size:12px;font-weight:800;letter-spacing:.12em;color:#818cf8;margin-bottom:14px}
+.ticket.pass .tt{color:#10b981}.ticket.fail .tt{color:#f43f5e}
+.trow{display:flex;justify-content:space-between;gap:14px;padding:8px 0;font-size:14px;border-bottom:1px solid rgba(148,163,184,.16)}
+.trow:last-child{border-bottom:0;padding-bottom:0}
+.trow span{color:#94a3b8;font-size:13px;flex:0 0 auto}
+.trow b{font-weight:700;color:#1e293b;text-align:right;word-break:break-all}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.1em;color:#4f46e5;font-size:15px}
+.wronglist{margin-top:16px}
+.wrong{background:#fff;border-radius:15px;padding:16px;margin-bottom:11px;border:1px solid #fee2e2;border-left:4px solid #f43f5e}
+.wrong .wsec{font-size:11px;font-weight:800;color:#f43f5e;letter-spacing:.05em;margin-bottom:7px}
+.wrong .wq{font-size:14.5px;font-weight:700;line-height:1.6;margin-bottom:11px;color:#0f172a}
+.wrong .wline{font-size:13px;line-height:1.7;color:#64748b}
+.wrong .wline em{font-style:normal;color:#e11d48;font-weight:700}
+.wrong .wline u{text-decoration:none;color:#059669;font-weight:700}
+.exp{margin-top:11px;padding:11px 13px;border-radius:11px;background:#f8fafc;border-left:3px solid #cbd5e1;font-size:13px;line-height:1.7;color:#475569}
+.exp b{color:#334155}
+.stack{display:flex;flex-direction:column;gap:11px;margin-top:20px}
+.tipbox{margin-top:16px;padding:14px 16px;border-radius:14px;background:#eef2ff;font-size:13px;line-height:1.75;color:#3730a3}
+.tipbox b{font-weight:800}
+.hist{margin-top:20px;font-size:12.5px;color:#94a3b8;line-height:1.9}
+.toast{position:fixed;left:50%;bottom:44px;transform:translate(-50%,14px);background:rgba(15,23,42,.92);color:#fff;font-size:13.5px;font-weight:600;padding:12px 20px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;z-index:99;max-width:82vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.warnshake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media(max-width:360px){.hero h1{font-size:24px}.qtext{font-size:16px}.meta b{font-size:18px}.hero{padding:36px 8px 20px}}
+
+/* ================================================================
+   特效增强层 —— 多邻国手感 + 旧时代游戏鬼畜特效
+   直接追加在原样式之后，同名选择器会覆盖原样式。
+   ================================================================ */
+
+/* ---------- 1. 3D 立体选项按钮（多邻国招牌手感） ---------- */
+.opt{
+  border:2px solid #e8edf3;
+  border-bottom:4px solid #d7dfe8;
+  box-shadow:0 1px 0 rgba(15,23,42,.02);
+  transition:transform .07s ease, border-color .14s, background .14s, box-shadow .14s;
+  animation:optPop .26s cubic-bezier(.22,.9,.3,1);
+}
+.opts .opt:nth-child(1){ animation-delay:.02s }
+.opts .opt:nth-child(2){ animation-delay:.06s }
+.opts .opt:nth-child(3){ animation-delay:.10s }
+.opts .opt:nth-child(4){ animation-delay:.14s }
+.opts .opt:nth-child(5){ animation-delay:.18s }
+.opt:active{
+  transform:translateY(3px);
+  border-bottom-width:1.5px;
+  box-shadow:none;
+}
+.opt.selected{
+  border-color:#6366f1;
+  border-bottom-color:#4338ca;
+  background:#f5f6ff;
+  box-shadow:0 0 0 4px rgba(99,102,241,.10);
+}
+@keyframes optIn{ from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+@keyframes optPop{ from{transform:translateY(10px)} to{transform:none} }
+
+/* 判对 / 判错 */
+.opt.correct{
+  border-color:#10b981; border-bottom-color:#059669; background:#ecfdf5;
+  animation:optCorrect .5s cubic-bezier(.2,1.5,.4,1);
+}
+.opt.correct .box{ border-color:#059669; background:#059669; }
+@keyframes optCorrect{
+  0%{transform:scale(1)} 35%{transform:scale(1.07)} 65%{transform:scale(.98)} 100%{transform:scale(1)}
+}
+.opt.wrong{
+  border-color:#f43f5e; border-bottom-color:#be123c; background:#fff1f2;
+  animation:optShake .42s cubic-bezier(.36,.07,.19,.97);
+}
+.opt.wrong .box{ border-color:#e11d48; background:#e11d48; }
+@keyframes optShake{
+  0%,100%{transform:translateX(0)}
+  15%{transform:translateX(-9px)} 40%{transform:translateX(8px)}
+  65%{transform:translateX(-5px)} 85%{transform:translateX(3px)}
+}
+
+/* ---------- 2. 卡片进场 / 退场 ---------- */
+.screen.active .card{ animation:cardIn .34s cubic-bezier(.22,.9,.3,1) }
+@keyframes cardIn{
+  from{ transform:translateX(26px) scale(.985) }
+  to{ transform:none }
+}
+.card.leaving{ animation:cardOut .18s ease forwards }
+@keyframes cardOut{ to{ opacity:0; transform:translateX(-24px) scale(.985) } }
+
+/* 整页答错时的屏幕震动 */
+.quake{ animation:quake .34s cubic-bezier(.36,.07,.19,.97) }
+@keyframes quake{
+  0%,100%{transform:translate(0,0)}
+  20%{transform:translate(-4px,2px)} 45%{transform:translate(4px,-2px)}
+  70%{transform:translate(-3px,-1px)} 88%{transform:translate(2px,2px)}
+}
+
+/* ---------- 3. 进度条闪光 ---------- */
+.track i{ position:relative; overflow:hidden }
+.track i::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);
+  transform:translateX(-100%);
+}
+.track.flash i::after{ animation:barFlash .55s ease }
+@keyframes barFlash{ to{ transform:translateX(100%) } }
+
+/* ---------- 4. 连击 ---------- */
+.combo{
+  position:fixed; top:16%; left:50%; z-index:210; pointer-events:none;
+  font-size:34px; font-weight:900; letter-spacing:-.02em;
+  color:#fbbf24;
+  text-shadow:0 3px 0 #92400e, 0 0 24px rgba(251,191,36,.75);
+  animation:comboPop .95s cubic-bezier(.2,1.6,.4,1) forwards;
+  white-space:nowrap;
+}
+@keyframes comboPop{
+  0%{ transform:translateX(-50%) scale(.3) rotate(-14deg); opacity:0 }
+  28%{ transform:translateX(-50%) scale(1.25) rotate(5deg); opacity:1 }
+  62%{ transform:translateX(-50%) scale(1) rotate(-2deg); opacity:1 }
+  100%{ transform:translateX(-50%) scale(1.08) translateY(-52px); opacity:0 }
+}
+
+/* ---------- 5. 粒子 & 彩纸 ---------- */
+.fx-layer{ position:fixed; inset:0; pointer-events:none; z-index:200; overflow:hidden }
+.fx-particle{
+  position:fixed; will-change:transform,opacity;
+  animation:fxOut .88s cubic-bezier(.2,.7,.4,1) forwards;
+  filter:drop-shadow(0 2px 3px rgba(15,23,42,.18));
+}
+@keyframes fxOut{
+  0%{ transform:translate(-50%,-50%) scale(.35) rotate(0deg); opacity:1 }
+  55%{ opacity:1 }
+  100%{ transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.15) rotate(var(--rot)); opacity:0 }
+}
+.confetti{
+  position:fixed; top:-24px; border-radius:2px;
+  animation:confFall linear forwards;
+}
+@keyframes confFall{
+  0%{ transform:translateY(0) rotate(0deg); opacity:1 }
+  100%{ transform:translateY(108vh) rotate(760deg); opacity:.85 }
+}
+
+/* ---------- 6. 结果页 ---------- */
+.seal.pass{ animation:sealBounce .8s cubic-bezier(.2,1.5,.35,1) }
+@keyframes sealBounce{
+  0%{ transform:scale(.2) rotate(-25deg); opacity:0 }
+  45%{ transform:scale(1.18) rotate(8deg); opacity:1 }
+  70%{ transform:scale(.95) rotate(-3deg) }
+  100%{ transform:scale(1) rotate(0) }
+}
+.seal.fail{ animation:sealFail .7s cubic-bezier(.36,.07,.19,.97) }
+@keyframes sealFail{
+  0%{ transform:scale(.4); opacity:0 }
+  40%{ transform:scale(1.05); opacity:1 }
+  55%{ transform:translateX(-8px) } 70%{ transform:translateX(7px) }
+  85%{ transform:translateX(-4px) } 100%{ transform:translateX(0) }
+}
+.score{ transition:color .2s }
+.cond{ animation:optIn .4s cubic-bezier(.22,.9,.3,1) backwards }
+.cond:nth-child(2){ animation-delay:.1s }
+.ticket{ animation:optIn .5s cubic-bezier(.22,.9,.3,1) .12s backwards }
+.wrong{ animation:optIn .38s cubic-bezier(.22,.9,.3,1) backwards }
+.wrong:nth-child(1){ animation-delay:.02s }
+.wrong:nth-child(2){ animation-delay:.08s }
+.wrong:nth-child(3){ animation-delay:.14s }
+.wrong:nth-child(4){ animation-delay:.20s }
+.wrong:nth-child(5){ animation-delay:.26s }
+
+/* ---------- 7. 通过时的彩虹描边 ---------- */
+.rainbow{
+  position:fixed; inset:0; pointer-events:none; z-index:205;
+  box-shadow:inset 0 0 0 6px rgba(244,63,94,.5), inset 0 0 40px rgba(139,92,246,.35);
+  animation:rainbowFade 1.6s ease forwards;
+}
+@keyframes rainbowFade{
+  0%{ opacity:0 } 15%{ opacity:1 } 60%{ opacity:.7 } 100%{ opacity:0 }
+}
+
+/* ---------- 8. 首页浮动装饰 ---------- */
+.hero{ position:relative }
+.floaty{
+  position:absolute; font-size:22px; opacity:.5; pointer-events:none;
+  animation:floaty 4.5s ease-in-out infinite;
+}
+@keyframes floaty{
+  0%,100%{ transform:translateY(0) rotate(-6deg); opacity:.35 }
+  50%{ transform:translateY(-14px) rotate(8deg); opacity:.75 }
+}
+
+/* ---------- 9. 按钮按下反馈 ---------- */
+.btn{ position:relative; overflow:hidden }
+.btn::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(circle at center, rgba(255,255,255,.55), transparent 62%);
+  opacity:0; transform:scale(.4);
+}
+.btn.tap::after{ animation:btnRipple .45s ease-out }
+@keyframes btnRipple{
+  0%{ opacity:.9; transform:scale(.3) }
+  100%{ opacity:0; transform:scale(1.7) }
+}
+
+/* ---------- 10. 进度条上的运球小人 ---------- */
+.track{ position:relative; overflow:visible }
+.dribbler{
+  position:absolute; top:50%; left:0; width:30px; height:46px;
+  transform:translate(-50%,-50%); margin-top:-1px;
+  transition:left .32s cubic-bezier(.3,.9,.3,1);
+  pointer-events:none; z-index:3;
+}
+.dribbler svg{ width:100%; height:100%; overflow:visible; display:block }
+.dribbler img{ width:100%; height:100%; object-fit:contain; display:block; animation:dribBounce .46s ease-in-out infinite }
+.dw-body{ animation:dribBounce .42s ease-in-out infinite }
+@keyframes dribBounce{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+.dw-ball{ animation:dribBall .42s cubic-bezier(.35,.15,.65,.9) infinite }
+@keyframes dribBall{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(9px)} }
+.dw-leg1{ animation:legA .42s ease-in-out infinite }
+.dw-leg2{ animation:legB .42s ease-in-out infinite }
+@keyframes legA{ 0%,100%{transform:rotate(13deg)} 50%{transform:rotate(-15deg)} }
+@keyframes legB{ 0%,100%{transform:rotate(-13deg)} 50%{transform:rotate(15deg)} }
+
+/* ---------- 11. 失败界面的 24 号 ---------- */
+.seal.jersey{
+  background:linear-gradient(135deg,#8b5cf6,#552583) !important;
+  box-shadow:0 12px 34px -10px rgba(85,37,131,.75) !important;
+  color:#FDB927;
+}
+.seal.jersey .jersey-num{
+  font-size:44px; font-weight:900; letter-spacing:-.03em;
+  color:#FDB927; text-shadow:0 2px 0 rgba(0,0,0,.25);
+  font-family:Impact,"Arial Black",Arial,sans-serif;
+}
+.seal.jersey img{ width:100%; height:100%; object-fit:cover; object-position:50% 50%; border-radius:50%; display:block }
+.seal .jersey-wrap{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; border-radius:50%; overflow:hidden }
+
+/* 修复：进场动画不再依赖 opacity —— 否则图片加载/无头渲染时内容会一直透明 */
+.opt, .wrong, .cond, .ticket, .opt .txt { animation: none !important; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important }
+}
+
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ========== 开始页 ========== -->
+  <section id="screen-start" class="screen active">
+    <div class="hero">
+      <div class="badge">别慌，只有十道题</div>
+      <h1 id="startTitle">进群先过这一关</h1>
+      <p class="sub" id="startSub"></p>
+      <div class="meta">
+        <div><b id="mCount">–</b><span>题目</span></div>
+        <div><b id="mPass">–</b><span>及格分</span></div>
+        <div><b id="mTime">不限</b><span>用时</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label for="nick">你的群昵称</label>
+        <input id="nick" type="text" maxlength="24" placeholder="填一个能和群成员对上号的名字" autocomplete="off">
+        <div class="hint" id="nickHint">考完发你一张带凭证码的成绩单，截图丢群里就放你进来。名字写真的，别写「奥特曼」——管理员认不出会卡你。</div>
+      </div>
+      <div class="notice" id="ruleNotice"></div>
+      <div class="typelist" id="typeList"></div>
+      <button class="btn" id="btnStart" style="margin-top:20px">开始答题（就十道）</button>
+    </div>
+    <div class="hist" id="startHist"></div>
+  </section>
+
+  <!-- ========== 答题页 ========== -->
+  <section id="screen-quiz" class="screen">
+    <div class="topbar">
+      <div class="barline">
+        <span id="progText">第 1 / 30 题</span>
+        <span class="timer" id="timerText"></span>
+        <button class="sheetbtn" id="btnSheet">答题卡</button>
+      </div>
+      <div class="track"><i id="progBar"></i><span class="dribbler" id="dribbler"></span></div>
+    </div>
+    <div class="card">
+      <div class="qhead">
+        <span class="chip" id="qChip">单选</span>
+        <span class="chip sec" id="qSec">总则</span>
+        <span class="qnum" id="qNum">01</span>
+      </div>
+      <p class="qtext" id="qText"></p>
+      <div class="opts" id="qOpts"></div>
+    </div>
+    <div class="footbar">
+      <button class="btn ghost prev" id="btnPrev">上一题</button>
+      <button class="btn" id="btnNext">下一题</button>
+    </div>
+  </section>
+
+  <!-- ========== 结果页 ========== -->
+  <section id="screen-result" class="screen">
+    <div class="result-hero">
+      <div class="seal" id="rSeal"></div>
+      <div class="score" id="rScore"></div>
+      <p id="rMsg"></p>
+      <div class="conds" id="rConds"></div>
+    </div>
+    <div class="ticket" id="rTicket">
+      <div class="tt" id="rTicketTitle">通关凭证</div>
+      <div class="trow"><span>昵称</span><b id="rNick">–</b></div>
+      <div class="trow"><span>成绩</span><b id="rDetail">–</b></div>
+      <div class="trow" id="rCoreRow"><span>必答区</span><b id="rCore">–</b></div>
+      <div class="trow"><span>交卷时间</span><b id="rTime">–</b></div>
+      <div class="trow"><span>凭证码</span><b class="code" id="rCode">–</b></div>
+    </div>
+    <div class="wronglist" id="rWrong"></div>
+    <div class="stack">
+      <button class="btn" id="btnCopy">复制凭证信息</button>
+      <button class="btn ghost" id="btnRetry">重新答题</button>
+    </div>
+    <div class="tipbox" id="rTip"></div>
+    <div class="hist" id="rHist"></div>
+  </section>
+
+</div>
+
+<div class="mask" id="mask"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-hd">
+    <div><b>答题卡</b><span class="st" id="sheetStat"></span></div>
+    <button id="btnSheetClose">收起</button>
+  </div>
+  <div class="legend">
+    <span class="l1"><i></i>当前</span>
+    <span class="l2"><i></i>已答</span>
+    <span class="l3"><i></i>未答</span>
+  </div>
+  <div class="cardgrid" id="cardGrid"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================================================================
+   ①  配置区
+   ================================================================ */
+const CONFIG = {
+  groupName:   "半间猫窝（Cat Ham、小猫Ham）",
+  title:       "群规十题，答完放你进来",
+  subtitle:    "",
+  rulesVersion:"《半间猫窝（Cat Ham、小猫Ham）群规》修订3（2026-08-16 发布）",
+  passScore:       60,     // 总分及格线
+  corePassRate:    0,      // 必答区正确率下限（0 = 不启用这道门槛，只看总分）
+  drawCount:       10,     // 每次随机抽几题（单文件模式与服务端模式一致）
+  progressImage:   "./素材/paddle_1.png",  // 进度条上的图（留空则用内置运球小人）
+  failImage:       "./素材/kobe_small.png",   // 失败界面的图（留空则用内置 24 号）
+  shuffleQuestions: true,  // 题目顺序整体随机
+  shuffleOptions:   true,  // 选项顺序随机
+  timeLimit:   0,          // 限时秒数，0=不限
+  apiUrl:      "",         // 结果回传地址（接机器人后填）
+  showExplain: true,
+  allowRetry:  true,
+};
+
+/* ================================================================
+   ②  题库区（30 题）
+   ----------------------------------------------------------------
+   全部依据《半间猫窝（Cat Ham、小猫Ham）群规》修订3 原文。
+
+   type:   single 单选 / multi 多选 / judge 判断
+           fill   挖空填词（手写输入，按下方 accept 数组判分）
+           scene  情景运用（题干给出具体场景，判断处理方式）
+   core:   true=必答区（计入核心正确率）；false=情景运用区
+   accept: 仅 fill 题使用——可接受的答案写法，第一个用于展示
+   ================================================================ */
+/* ================================================================
+   第二代题库（案例三档判定）
+   ----------------------------------------------------------------
+   出题范式：给一个具体案例，判断属于哪一档
+       无违规  /  轻微违规（撤回消息+禁言 1 天）  /  严重违规（移出群聊+加黑名单）
+
+   全部依据《半间猫窝（Cat Ham、小猫Ham）群规》修订3：
+     严重档（移出+拉黑）：政治内容、编造呼号、盗用呼号、
+                          违法违规内容情节恶劣或不知悔改、累犯
+     轻微档（禁言1天）：非业余频率、军事与敏感内容、非业余设备（单收台除外）、
+                        误导性行为、吵架、未经允许发广告、引战、侮辱、
+                        违法违规内容情节轻微
+     无违规：单收无线电台、群主批准的广告、正当维权、正常交流等
+   ================================================================ */
+/* ================================================================
+   第二代题库 · 冷幽默版（案例三档判定）
+   ----------------------------------------------------------------
+   范式：给一个具体案例 → 判断属于哪一档
+        无违规 / 轻微违规（撤回+禁言1天）/ 严重违规（移出+拉黑）
+   全部依据《半间猫窝（Cat Ham、小猫Ham）群规》修订3。
+   ================================================================ */
+const QUESTIONS = [
+
+/* ---------- 呼号 ---------- */
+{ sec:"呼号", core:true, type:"case",
+  q:"【案例】某成员把群昵称里的呼号写成了「BG2XYZ」。看着挺专业，但这个呼号的主人另有其人，此刻正在群里潜水。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[2],
+  explain:"严重违规。呼号不是网名，是操作者的身份标识——不能借、不能编、不能蹭。他这一改，相当于给自己办了张别人的身份证。处理：移出群聊并加入群黑名单。依据：群规〈群成员的违规〉。" },
+
+{ sec:"呼号", core:true, type:"case",
+  q:"【案例】某成员为了显得专业，给自己编了个呼号「BD9AAA」，写进昵称，并在群里以此自称。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[2],
+  explain:"严重违规。这条呼号现实中不存在，但群规不管它存不存在——编造呼号本身就是红线。处理：移出群聊并加入群黑名单。依据：群规〈群成员的违规〉。" },
+
+{ sec:"呼号", core:true, type:"case",
+  q:"【案例】某成员把别人的呼号填进自己昵称，用这个身份在群里聊了好几天，直到呼号本人进群，两人四目相对。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[2],
+  explain:"严重违规。用了好几天不改变性质，只是让情节更完整。处理：移出群聊并加入群黑名单。依据：群规〈群成员的违规〉。" },
+
+/* ---------- 政治与敏感 ---------- */
+{ sec:"政治敏感", core:true, type:"case",
+  q:"【案例】某成员转发了一张新闻截图，截图里带着明显的政治评论。他自己的配文只有两个字：「看看」。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[2],
+  explain:"严重违规。「看看」两个字不构成免责声明。发送带有政治内容的文字、图片都属最重档，图片尤其算。处理：移出群聊并加入群黑名单。依据：群规〈群成员的违规〉。" },
+
+{ sec:"政治敏感", core:true, type:"case",
+  q:"【案例】某成员在群里发了段语音，内容是政治评论。他大概觉得语音比打字隐蔽一些。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[2],
+  explain:"严重违规。群规早就想到这一层了：文字、图片、视频、语音、录音，一样都不放过。换个载体不等于换个违规。处理：移出群聊并加入群黑名单。依据：群规〈群成员的违规〉。" },
+
+{ sec:"政治敏感", core:true, type:"case",
+  q:"【案例】某成员多次在群里发政治段子，被禁言处理之后，又发了新的。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[2],
+  explain:"严重违规。政治内容本身就是最重档；被处理之后继续发，还额外触发了「不知悔改」。处理：移出群聊并加入群黑名单。依据：群规〈群成员的违规〉。" },
+
+/* ---------- 非业余频率 ---------- */
+{ sec:"非业余频率", core:true, type:"case",
+  q:"【案例】某成员在群里发了个商用频段的数字，问：「这个频率有人能听到吗？」",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。这个频率不归业余业务管，聊它就是讨论非业余频率。处理：撤回消息并禁言 1 天。依据：群规〈群成员的基本义务〉〈群成员的违规〉。" },
+
+{ sec:"非业余频率", core:true, type:"case",
+  q:"【案例】某成员发了段手台操作视频，镜头扫过屏幕时，非业余频率清清楚楚。他大概以为没人会暂停看。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。群规写得很细：「含发送含有非业余频率的文字、图片、视频、语音、录音」——视频也算，暂停看的人也是人。处理：撤回消息并禁言 1 天。依据：群规〈群成员的基本义务〉〈群成员的违规〉。" },
+
+{ sec:"非业余频率", core:true, type:"case",
+  q:"【案例】某成员因讨论非业余频率被禁言 1 天。几天后，他发了段带非业余频率的手台视频。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[2],
+  explain:"严重违规。这就是群规里的累犯升级：曾被禁言 1 天、之后再犯的，直接移出群聊并加入群黑名单。禁言不是倒计时，是警告。依据：群规〈群成员的违规〉。" },
+
+/* ---------- 军事与涉密 ---------- */
+{ sec:"军事涉密", core:true, type:"case",
+  q:"【案例】某成员在群里详细讨论某型号军用短波电台的技术参数。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。这一条同时踩了两条线：「讨论军事内容」和「讨论非业余设备（含军事无线电台/站）」。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+{ sec:"军事涉密", core:true, type:"case",
+  q:"【案例】某成员提到自己在某单位工作，顺口聊了些有保密要求的内容。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。群规把「讨论军事内容或其他敏感（或有保密要求的）内容」都列进来了。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+/* ---------- 非业余设备 ---------- */
+{ sec:"非业余设备", core:true, type:"case",
+  q:"【案例】某成员在群里展示并介绍自己的一台商用中继台。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。非业余设备不在本群的讨论范围里。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+{ sec:"非业余设备", core:true, type:"case",
+  q:"【案例】某成员往群里发了几张军事无线电台（站）的照片，并开始逐图讲解。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。群规原文写得很细：〔含军事无线电台（站）等，但单收无线电台（站）除外〕。带「站」字的，都在里面。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+{ sec:"非业余设备", core:true, type:"case",
+  q:"【案例】某成员在群里聊自己那台单收短波收音机的接收效果，还分享了些收听心得。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[0],
+  explain:"无违规。群规在禁止讨论非业余设备时，专门开了个口子：「单收无线电台（站）除外」。这台机器只听不发，正是那个例外。依据：群规〈群成员的违规〉。" },
+
+/* ---------- 引战 / 侮辱 / 吵架 ---------- */
+{ sec:"引战侮辱", core:true, type:"case",
+  q:"【案例】某成员在群里对另一位群友说：「你连这个都不懂，还玩什么无线电。」",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。技术讨论可以犀利，但不能冲着人来。带侮辱内容的发言属禁言 1 天档。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+{ sec:"引战侮辱", core:true, type:"case",
+  q:"【案例】某成员在群里发：「某某牌子的机器都是垃圾，买这牌子的都是傻子。」",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。这话的技术含量为零，引战含量拉满。引战内容属禁言 1 天档。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+{ sec:"引战侮辱", core:true, type:"case",
+  q:"【案例】甲和乙因为设备选型在群里吵了起来，越吵越具体，从机器吵到了人品。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。群规原文：「在群组内吵架（各方均禁言 1 天）」——不查谁先开口，参与的各方一起降温。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+{ sec:"引战侮辱", core:true, type:"case",
+  q:"【案例】某成员持续在群里对其他群友阴阳怪气，一句脏话都没有，但句句扎人。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。不带脏字的嘲讽，依然是侮辱。群规管的是效果，不是用词。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+{ sec:"引战侮辱", core:true, type:"case",
+  q:"【案例】某成员上周因发引战内容被禁言 1 天，这周又发了新的引战内容。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[2],
+  explain:"严重违规。累犯升级触发：移出群聊并加入群黑名单。第二次机会，已经用过了。依据：群规〈群成员的违规〉。" },
+
+/* ---------- 广告 ---------- */
+{ sec:"广告", core:true, type:"case",
+  q:"【案例】某成员没打招呼，在群里连发了三条自己店铺的商品链接。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。未经允许发布广告属禁言 1 天档。三条算三次违规，但处理只有一档。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+{ sec:"广告", core:true, type:"case",
+  q:"【案例】某成员在群里发了一条带货信息，事先没有征得群主同意。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。群规要求发布广告前须征得群主（BG2HCB）同意。处理：撤回消息并禁言 1 天。依据：群规〈群成员的基本义务〉〈群成员的违规〉。" },
+
+{ sec:"广告", core:true, type:"case",
+  q:"【案例】某成员先私聊群主说明情况、拿到批准，然后在群里发了一条设备转让信息。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[0],
+  explain:"无违规。群规原文：「群成员在经过群主（BG2HCB）的批准后，可以发布广告。」走流程的人不受罚——这就是流程存在的意义。依据：群规〈群成员的基本权利〉。" },
+
+/* ---------- 误导性行为 ---------- */
+{ sec:"误导行为", core:true, type:"case",
+  q:"【案例】一位老手在群里鼓动刚入群、还没考证的新人：「直接上机，没人查。」",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。群规把「教唆新人无证上台」列为有明显误导性的行为。热心和带偏，只隔一句话。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+{ sec:"误导行为", core:true, type:"case",
+  q:"【案例】某成员在群里喊：「大家一起大功率压过去，把那个台盖掉。」",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。「教唆其他群成员压制其他电台」是群规明列的误导性行为。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+{ sec:"误导行为", core:true, type:"case",
+  q:"【案例】某成员劝一位只持有 A 类操作证书的群友：「你去发短波试试，没事的。」",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。群规把「教唆其他仅持有 A 类操作证书的群成员发射短波」单独列了一条——写群规的人，显然见过这种场面。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+{ sec:"误导行为", core:true, type:"case",
+  q:"【案例】某成员向新人推荐了一款没有核准代码的机器，还教他怎么买、怎么发射。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。群规原文和这个情节几乎一字不差：「教唆其他群成员购买没有核准代码的机器，并使用该机器发射」。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+/* ---------- 内容载体 ---------- */
+{ sec:"内容载体", core:true, type:"case",
+  q:"【案例】某成员用语音说了一段含有非业余频率的内容。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。群规对载体的态度是「都可以」：文字、图片、视频、语音、录音，用说的也算。处理：撤回消息并禁言 1 天。依据：群规〈群成员的基本义务〉〈群成员的违规〉。" },
+
+{ sec:"内容载体", core:true, type:"case",
+  q:"【案例】某成员在群里发了一张带有政治内容的图片，一个字都没配。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[2],
+  explain:"严重违规。不发文字不等于不违规——政治内容属最重档，载体不限。处理：移出群聊并加入群黑名单。依据：群规〈群成员的违规〉。" },
+
+{ sec:"内容载体", core:true, type:"case",
+  q:"【案例】某成员发了段录音，录音里他在骂另一位群友。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。骂人不分形式，录音里的骂也是骂。处理：撤回消息并禁言 1 天。依据：群规〈群成员的违规〉。" },
+
+/* ---------- 正常行为 ---------- */
+{ sec:"正常行为", core:true, type:"case",
+  q:"【案例】某成员在群里分享了一份正版、免费的学习资料链接。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[0],
+  explain:"无违规。群规禁止的是「广告」，不是分享。免费、正版、有用的东西，欢迎。依据：群规〈群成员的基本权利〉。" },
+
+{ sec:"正常行为", core:true, type:"case",
+  q:"【案例】某成员要出差三个月，出发前私聊管理员报备了一下，说这段时间没法活跃。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[0],
+  explain:"无违规。群规原文：「如果有特殊原因无法活跃，且不希望被清理出群组，请提前通知管理员或群主记录。」报备一句，三个月清净。依据：群规〈群成员的基本义务〉。" },
+
+{ sec:"正常行为", core:true, type:"case",
+  q:"【案例】某成员觉得自己被误禁言了，于是私聊管理员说明情况、为自己申诉。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[0],
+  explain:"无违规。群规给了辩护权，也给了管理员听取辩护的义务。有理就说，别憋着。依据：群规〈群成员的基本权利〉〈管理员的基本义务〉。" },
+
+{ sec:"正常行为", core:true, type:"case",
+  q:"【案例】某成员看到另一位群友被处罚，觉得不太合理，在群里替对方说明情况。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[0],
+  explain:"无违规。群规写的辩护权是双份的：为自己辩护，也为他人辩护。依据：群规〈群成员的基本权利〉。" },
+
+{ sec:"正常行为", core:true, type:"case",
+  q:"【案例】某成员把自己整理的一份业余无线电入门笔记上传到群文件，供大家下载。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[0],
+  explain:"无违规。群规明列：群成员可以在群组内上传群文件以供其他群成员使用。依据：群规〈群成员的基本权利〉。" },
+
+{ sec:"正常行为", core:true, type:"case",
+  q:"【案例】某成员看到群里有人发违规内容，立刻私聊管理员举报。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[0],
+  explain:"无违规。举报违规是群规写进「权利」和「义务」两章的事——既是你的权利，也是你该做的。依据：群规〈群成员的基本权利〉〈群成员的基本义务〉。" },
+
+{ sec:"正常行为", core:true, type:"case",
+  q:"【案例】某成员在群里和其他群友正常讨论业余频段的通联技巧、天线架设经验。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[0],
+  explain:"无违规。这本来就是本群存在的意义。依据：群规〈群成员的基本权利〉。" },
+
+{ sec:"正常行为", core:true, type:"case",
+  q:"【案例】某成员因为长期不发言，被管理员按不活跃清理出群。他事前没跟任何人报备过。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[0],
+  explain:"无违规。被清理是群规规定的常规管理动作（群聊人数有上限，管理员会不定时清理不活跃成员），但他本人没有违反任何禁止性条款。依据：群规〈群成员的基本义务〉。" },
+
+/* ---------- 累犯 ---------- */
+{ sec:"累犯", core:true, type:"case",
+  q:"【案例】某成员上个月因未经允许发广告被禁言 1 天，这个月又在群里发了广告。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[2],
+  explain:"严重违规。累犯升级：移出群聊并加入群黑名单。群规给他留过一次机会，他用完了。依据：群规〈群成员的违规〉。" },
+
+/* ---------- 管理员 ---------- */
+{ sec:"管理员", core:true, type:"case",
+  q:"【案例】某管理员没经过群主同意，就在群里发布了一条自己的推广信息。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[1],
+  explain:"轻微违规。管理员在广告这件事上没有任何特权：群规明确规定管理员发布广告前，须征得群主同意。处理：撤回消息并禁言 1 天；此外管理员还有加重条款（可酌情剥夺管理员身份一定时长）。依据：群规〈管理员的基本义务〉〈管理员的违规〉。" },
+
+{ sec:"管理员", core:true, type:"case",
+  q:"【案例】某管理员发现有群成员发引战内容，于是撤回消息、禁言 1 天，并写了群公告。",
+  options:["无违规，属于正常交流","轻微违规 —— 撤回消息并禁言 1 天","严重违规 —— 移出群聊并加入群黑名单"],
+  answer:[0],
+  explain:"无违规。这是管理员依据群规正常履职——群规授予管理员按本规定处理违规群成员的权力。依据：群规〈管理员的基本权力〉。" },
+
+];
+
+const URLP = new URLSearchParams(location.search);
+const VISITOR = { uid:URLP.get("uid")||"", token:URLP.get("token")||"", name:URLP.get("name")||"" };
+
+/* ---- 远端模式：题目由服务端随机抽取（URL 带 ?sid=xxx）---- */
+const REMOTE_SID = URLP.get("sid") || "";
+const API_BASE   = (location.protocol === "file:") ? (URLP.get("api") || "") : "";
+let REMOTE = null;
+
+const $ = function(id){ return document.getElementById(id); };
+function shuffle(a0){ const a=a0.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function pad(n){ return n<10?"0"+n:""+n; }
+function fmtTime(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+pad(d.getHours())+":"+pad(d.getMinutes()); }
+function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._tm); t._tm=setTimeout(function(){ t.classList.remove("show"); },2000); }
+function makeCode(seed){
+  let h1=0x811c9dc5,h2=0x1000193;
+  for(let i=0;i<seed.length;i++){ const c=seed.charCodeAt(i); h1=Math.imul(h1^c,0x01000193)>>>0; h2=Math.imul(h2^c,0x85ebca6b)>>>0; }
+  let s=(h1.toString(36)+h2.toString(36)).toUpperCase().replace(/[^A-Z0-9]/g,"");
+  while(s.length<8) s+="X";
+  return s.slice(0,4)+"-"+s.slice(4,8);
+}
+const STORE=(function(){
+  let mem={},ok=true;
+  try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); }catch(e){ ok=false; }
+  return {
+    get:function(k,d){ try{ if(ok){ const r=localStorage.getItem(k); if(r===null) return d; const v=JSON.parse(r); return (v===null||v===undefined)?d:v; } return (mem[k]===undefined)?d:mem[k]; }catch(e){ return d; } },
+    set:function(k,v){ try{ if(ok){ localStorage.setItem(k,JSON.stringify(v)); } else { mem[k]=v; } }catch(e){ mem[k]=v; } },
+  };
+})();
+/* 填词判分：归一化后完全相等 */
+function normFill(s){
+  return String(s===null||s===undefined?"":s).replace(/\s+/g,"")
+    .replace(/[，。、；：""''「」『』（）()【】\[\]《》〈〉!！?？.,;:~·\-—_]/g,"")
+    .toUpperCase();
+}
+function matchFill(raw, accept){
+  const u=normFill(raw);
+  if(!u) return false;
+  for(let i=0;i<accept.length;i++){ if(u===normFill(accept[i])) return true; }
+  return false;
+}
+
+const S={ list:[], answers:[], idx:0, nick:"", startedAt:0, timerId:null, remain:0, result:null };
+
+function initStart(){
+  const n=Math.min(CONFIG.drawCount||QUESTIONS.length, QUESTIONS.length), cn=QUESTIONS.filter(function(q){ return q.core!==false; }).length;
+  $("startTitle").textContent=CONFIG.title;
+  $("startSub").textContent=CONFIG.subtitle||(CONFIG.groupName+" · 十道真实案例，答对六道就放你进来。");
+  $("mCount").textContent=n;
+  $("mPass").textContent=CONFIG.passScore;
+  $("mTime").textContent=CONFIG.timeLimit>0?Math.round(CONFIG.timeLimit/60)+"分":"不限";
+  $("ruleNotice").innerHTML="<b>怎么玩：</b>共 <b>"+n+"</b> 题，总分 <b>"+CONFIG.passScore+"</b> 分就过；"
+    +(CONFIG.corePassRate>0 ? ("其中<b>必答区 "+cn+" 题</b>正确率须达 <b>"+Math.round(CONFIG.corePassRate*100)+"%</b>。") : "")
+    +(CONFIG.shuffleQuestions?"题目和选项都会打乱，抄隔壁的没用。":"")
+    +(CONFIG.timeLimit>0?"限时 <b>"+Math.round(CONFIG.timeLimit/60)+"</b> 分钟，到点自动交卷。":"")
+    +(CONFIG.allowRetry?"没过可以重考，考多少次都行。":"只有一次机会。")
+    +"<br><b>题库依据：</b>"+CONFIG.rulesVersion+"。群规如再修订，本题库须同步更新。";
+  const sorts=[];
+  QUESTIONS.forEach(function(q){
+    const t=(q.type==="case")?"案例":(q.type==="scene")?"情景运用":(q.type==="fill"?"挖空填词":(q.type==="multi"?"多选":(q.type==="judge"?"判断":"单选")));
+    if(sorts.indexOf(t)===-1) sorts.push(t);
+  });
+  $("typeList").innerHTML=sorts.map(function(s){ return "<span>"+s+"</span>"; }).join("");
+  if(VISITOR.name){ $("nick").value=VISITOR.name; $("nick").disabled=true; $("nickHint").textContent="昵称由系统带入，不可修改。"; }
+  const hist=STORE.get("quiz_hist",[]);
+  $("startHist").innerHTML=hist.length?("本机答题记录："+hist.slice(-3).map(function(h){ return h.time.slice(5)+" "+h.score+"分"; }).join(" · ")):"";
+}
+
+/* ---- 远端模式：从服务端拉题 ---- */
+function loadRemote(){
+  $("startSub").textContent="正在加载试题…";
+  $("btnStart").disabled=true;
+  fetch(API_BASE+"/api/session/"+REMOTE_SID)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(!d.ok) throw new Error(d.error||"会话不存在或已过期");
+      if(d.done){
+        /* 已经交过卷了（例如答完刷新页面）→ 直接展示成绩 */
+        const rr=d.result||{};
+        S.nick=d.name||"";
+        S.result={
+          score:rr.score, passed:rr.passed, right:rr.right, total:rr.total,
+          coreRight:rr.coreRight, coreTotal:rr.coreTotal, coreRate:rr.coreRate,
+          blank:rr.blank, code:d.code||rr.code||"", now:new Date(), nick:S.nick,
+          passScoreOK:(rr.score>=d.passScore), passCoreOK:(rr.coreRate>=d.corePassRate),
+          wrongs:(rr.wrongs||[]).map(function(w){
+            return {
+              q:{ sec:w.sec, core:true, type:w.type, q:w.question, opts:[], correct:[], accept:[] },
+              mine:"", _mineText:w.yours, _stdText:w.correct, _explain:w.explain||""
+            };
+          })
+        };
+        $("screen-start").classList.remove("active");
+        showResult();
+        var rb2=$("btnRetry");
+        if(rb2){ rb2.textContent="回群里重新发起"; rb2.onclick=function(){ toast("请回群里发送「答题」重新开始"); }; }
+        return;
+      }
+      REMOTE=d;
+      initStart();
+      $("startSub").textContent=CONFIG.groupName+" · 本次随机抽取 "+d.count+" 题";
+      $("mCount").textContent=d.count;
+      $("mPass").textContent=d.passScore;
+      $("mTime").textContent=CONFIG.timeLimit>0?Math.round(CONFIG.timeLimit/60)+"分":"不限";
+      $("ruleNotice").innerHTML="<b>规则：</b>从题库随机抽取 <b>"+d.count+"</b> 题，总分 <b>"+d.passScore
+        +(d.corePassRate>0?("</b> 分及格，必答区正确率须达 <b>"+Math.round(d.corePassRate*100)+"%</b>。"):"</b> 分及格。")
+        +"<br><b>题库依据：</b>"+CONFIG.rulesVersion+"。群规如再修订，本题库须同步更新。";
+      if(d.name && !$("nick").value) $("nick").value=d.name;
+      $("btnStart").disabled=false;
+    })
+    .catch(function(e){
+      $("startSub").textContent="";
+      $("ruleNotice").innerHTML='<b style="color:#b91c1c">加载失败：</b>'+e.message
+        +'<br><br>请回到群里重新发送「答题」再来一次，或联系管理员。';
+      $("btnStart").disabled=true;
+    });
+}
+
+/* ---- 远端模式：答案交给服务端判分 ---- */
+function submitRemote(){
+  $("btnNext").disabled=true;
+  $("btnNext").textContent="提交中…";
+  fetch(API_BASE+"/api/session/"+REMOTE_SID+"/submit",{
+    method:"POST", headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ answers:S.answers })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(!d.ok) throw new Error(d.error||"提交失败");
+    S.result={
+      score:d.score, passed:d.passed, right:d.right, total:d.total,
+      coreRight:d.coreRight, coreTotal:d.coreTotal, coreRate:d.coreRate,
+      blank:d.blank, code:d.code, now:new Date(), nick:S.nick,
+      passScoreOK:(d.score>=d.passScore), passCoreOK:(d.coreRate>=d.corePassRate),
+      wrongs:(d.wrongs||[]).map(function(w){
+        return {
+          q:{ sec:w.sec, core:true, type:w.type, q:w.question, opts:[], correct:[], accept:[] },
+          mine:"", _mineText:w.yours, _stdText:w.correct, _explain:w.explain||""
+        };
+      })
+    };
+    showResult();
+    var rb=$("btnRetry");
+    if(rb && rb.style.display!=="none"){
+      rb.textContent="回群里重新发起";
+      rb.onclick=function(){ toast("请回群里发送「答题」重新开始"); };
+    }
+  })
+  .catch(function(e){
+    $("btnNext").disabled=false;
+    $("btnNext").textContent="交卷";
+    toast("提交失败："+e.message);
+  });
+}
+
+function startQuiz(){
+  const nick=$("nick").value.trim();
+  if(!nick){ $("nick").classList.add("warnshake"); setTimeout(function(){ $("nick").classList.remove("warnshake"); },420); $("nick").focus(); toast("请先填写你的群昵称"); return; }
+  S.nick=nick; S.idx=0;
+  if(REMOTE){
+    /* 远端模式：服务端已随机抽题并打乱选项，前端不再动顺序，也只负责收答案 */
+    S.list=REMOTE.questions.map(function(q){
+      if(q.type==="fill") return { sec:q.sec, core:q.core!==false, type:"fill", q:q.q, opts:[], correct:[], accept:[], explain:"" };
+      return { sec:q.sec, core:q.core!==false, type:q.type, q:q.q,
+        opts:q.options.map(function(t){ return { text:t, correct:false }; }), correct:[], accept:[], explain:"" };
+    });
+  } else {
+  let list=QUESTIONS.slice();
+  if(CONFIG.shuffleQuestions) list=shuffle(list);
+  list=list.slice(0, Math.min(CONFIG.drawCount||list.length, list.length));
+  S.list=list.map(function(q){
+    if(q.type==="fill"){
+      return { sec:q.sec, core:q.core!==false, type:"fill", q:q.q, opts:[], correct:[], accept:q.accept||[], explain:q.explain||"" };
+    }
+    const opts=q.options.map(function(text,i){ return { text:text, correct:q.answer.indexOf(i)!==-1 }; });
+    const fo=CONFIG.shuffleOptions?shuffle(opts):opts;
+    const ci=[]; fo.forEach(function(o,i){ if(o.correct) ci.push(i); });
+    return { sec:q.sec, core:q.core!==false, type:q.type, q:q.q, opts:fo, correct:ci, accept:[], explain:q.explain||"" };
+  });
+  }
+
+  S.answers=S.list.map(function(){ return []; });
+  $("screen-start").classList.remove("active");
+  $("screen-quiz").classList.add("active");
+  window.scrollTo(0,0);
+  S.startedAt=new Date();
+  if(CONFIG.timeLimit>0){ S.remain=CONFIG.timeLimit; tick(); S.timerId=setInterval(tick,1000); } else { $("timerText").textContent=""; }
+  buildGrid();
+  render();
+}
+
+function tick(){
+  if(S.remain<=0){ clearInterval(S.timerId); S.timerId=null; toast("时间到，自动交卷"); return submit(); }
+  $("timerText").textContent="⏱ "+pad(Math.floor(S.remain/60))+":"+pad(S.remain%60);
+  S.remain--;
+}
+
+const TYPE_LABEL={ single:["单选","chip"], multi:["多选","chip multi"], judge:["判断","chip judge"], fill:["填词","chip fill"], scene:["情景","chip scene"], case:["案例","chip case"] };
+
+function render(){
+  const q=S.list[S.idx], total=S.list.length;
+  $("progText").textContent="第 "+(S.idx+1)+" / "+total+" 题";
+  $("progBar").style.width=(S.idx/total*100)+"%";
+  $("qNum").textContent=pad(S.idx+1);
+  const meta=TYPE_LABEL[q.type]||["单选","chip"];
+  $("qChip").textContent=meta[0]; $("qChip").className=meta[1];
+  $("qSec").textContent=q.sec;
+  $("qText").textContent=q.q;
+
+  const box=$("qOpts"); box.innerHTML="";
+  if(q.type==="fill"){
+    const w=document.createElement("div"); w.className="fillwrap";
+    const inp=document.createElement("input");
+    inp.className="fillinput"; inp.type="text"; inp.maxLength=30;
+    inp.placeholder="填入横线处缺失的内容"; inp.autocomplete="off"; inp.spellcheck=false;
+    inp.value=S.answers[S.idx][0]||"";
+    inp.oninput=function(){ S.answers[S.idx]=[inp.value]; $("btnNext").disabled=(inp.value.trim()===""); updateGrid(); };
+    inp.onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); if(inp.value.trim()!=="") goNext(); } };
+    w.appendChild(inp);
+    const tip=document.createElement("div");
+    tip.className="filltip"; tip.textContent="按群规原文填写，标点与空格不计。";
+    w.appendChild(tip);
+    box.appendChild(w);
+  } else {
+    q.opts.forEach(function(o,i){
+      const el=document.createElement("div");
+      el.className="opt"+(q.type==="multi"?" multi":"")+(S.answers[S.idx].indexOf(i)!==-1?" selected":"");
+      el.innerHTML='<div class="box"></div><div class="txt"></div>';
+      el.querySelector(".txt").textContent=o.text;
+      el.onclick=function(){ pick(i); };
+      box.appendChild(el);
+    });
+  }
+
+  $("btnPrev").disabled=(S.idx===0);
+  $("btnNext").textContent=(S.idx===total-1)?"交卷":"下一题";
+  $("btnNext").disabled=(q.type==="fill") ? ((S.answers[S.idx][0]||"").trim()==="") : (S.answers[S.idx].length===0);
+  updateGrid();
+  window.scrollTo({ top:0, behavior:"smooth" });
+}
+
+function pick(i){
+  const q=S.list[S.idx], cur=S.answers[S.idx];
+  if(q.type==="multi"){ const p=cur.indexOf(i); if(p===-1) cur.push(i); else cur.splice(p,1); }
+  else { S.answers[S.idx]=[i]; }
+  render();
+}
+function goNext(){
+  if(S.idx===S.list.length-1) submit(); else { S.idx++; render(); }
+}
+
+function buildGrid(){
+  const g=$("cardGrid"); g.innerHTML="";
+  S.list.forEach(function(q,i){
+    const b=document.createElement("button");
+    b.className="cg"; b.textContent=(i+1);
+    b.onclick=function(){ S.idx=i; closeSheet(); render(); };
+    g.appendChild(b);
+  });
+  updateGrid();
+}
+function updateGrid(){
+  const g=$("cardGrid"); if(!g.children.length) return;
+  let done=0;
+  for(let i=0;i<S.list.length;i++){
+    const el=g.children[i]; if(!el) continue;
+    const has=S.answers[i].length>0 && String(S.answers[i][0]).trim()!=="";
+    if(has) done++;
+    el.className="cg"+(has?" done":"")+(i===S.idx?" cur":"");
+  }
+  $("sheetStat").textContent="已答 "+done+" / "+S.list.length;
+}
+function openSheet(){ $("sheet").classList.add("open"); $("mask").classList.add("open"); }
+function closeSheet(){ $("sheet").classList.remove("open"); $("mask").classList.remove("open"); }
+
+function answerText(i){
+  const q=S.list[i];
+  if(q.type==="fill") return (S.answers[i][0]||"").trim();
+  return S.answers[i].map(function(k){ return q.opts[k]?q.opts[k].text:""; }).join(" / ");
+}
+function isRight(i){
+  const q=S.list[i];
+  if(q.type==="fill") return matchFill(S.answers[i][0], q.accept);
+  const mine=S.answers[i].slice().sort().join(",");
+  const std=q.correct.slice().sort().join(",");
+  return (mine!=="" && mine===std);
+}
+
+function submit(){
+  if(S.timerId){ clearInterval(S.timerId); S.timerId=null; }
+  if(REMOTE){ submitRemote(); return; }
+  let right=0, coreRight=0, coreTotal=0, blank=0;
+  const wrongs=[];
+  S.list.forEach(function(q,i){
+    if(q.core) coreTotal++;
+    if(!answerText(i)) blank++;
+    if(isRight(i)){ right++; if(q.core) coreRight++; }
+    else wrongs.push({ q:q, mine:answerText(i) });
+  });
+  const total=S.list.length;
+  const score=Math.round(right/total*100);
+  const coreRate=coreTotal?coreRight/coreTotal:1;
+  const passScoreOK=(score>=CONFIG.passScore);
+  const passCoreOK=(coreRate>=CONFIG.corePassRate);
+  const passed=(passScoreOK&&passCoreOK);
+  const now=new Date();
+  const code=makeCode(S.nick+"|"+S.startedAt.getTime()+"|"+score+"|"+Math.random());
+  S.result={ score:score, passed:passed, right:right, total:total, wrongs:wrongs, code:code, now:now, nick:S.nick,
+    coreRight:coreRight, coreTotal:coreTotal, coreRate:coreRate, passScoreOK:passScoreOK, passCoreOK:passCoreOK, blank:blank };
+
+  const hist=STORE.get("quiz_hist",[]);
+  hist.push({ time:fmtTime(now), score:score, passed:passed });
+  STORE.set("quiz_hist", hist.slice(-20));
+
+  if(CONFIG.apiUrl){
+    const payload={ uid:VISITOR.uid, token:VISITOR.token, nickname:S.nick, score:score, passed:passed,
+      right:right, total:total, coreRight:coreRight, coreTotal:coreTotal, code:code, time:now.toISOString(),
+      answers:S.list.map(function(q,i){ return { section:q.sec, type:q.type, core:q.core, question:q.q,
+        picked:answerText(i), isRight:isRight(i) }; }) };
+    try{ fetch(CONFIG.apiUrl,{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload), keepalive:true }).catch(function(){}); }catch(e){}
+  }
+  showResult();
+}
+
+/* 结果评语：按分数说句人话，考好考坏都有台阶 */
+function verdict(r){
+  if(r.passed){
+    if(r.right===r.total) return "满分。你不但看了群规，还看进去了——这成绩在群里可以直接去管别人了。";
+    if(r.score>=90) return "答得漂亮。看得出来是真把群规读完的人，不是扫一眼。";
+    if(r.score>=80) return "稳。这分数说明你清楚哪些线不能踩。";
+    return "压线通过。踩线也是通过，恭喜——不过下次别这么惊险。";
+  }
+  if(r.score>=50) return "就差一点点。纯蒙的人平均只能对三分之一，你已经摸到及格线了——再来一次基本就过。";
+  if(r.score>=30) return "嗯……群规可能只翻了一半？下面每道错题都写了依据，看完再考一次，很快的。";
+  return "这个分数说明群规还没打开过。不怪你——下面每道错题都写清了为什么，看完再来一次就行。";
+}
+
+function showResult(){
+  const r=S.result;
+  $("screen-quiz").classList.remove("active");
+  $("screen-result").classList.add("active");
+  window.scrollTo(0,0);
+  $("rSeal").className="seal "+(r.passed?"pass":"fail");
+  $("rSeal").textContent=r.passed?"✓":"✕";
+  $("rScore").className="score "+(r.passed?"pass":"fail");
+  $("rScore").innerHTML=r.score+"<small>分</small>";
+  $("rMsg").textContent=r.passed
+    ? "答对 "+r.right+"/"+r.total+" 题。 "+verdict(r)
+    : "答对 "+r.right+"/"+r.total+" 题"+(r.blank?("，其中 "+r.blank+" 题空着。"):"")+" "+verdict(r);
+
+  $("rConds").innerHTML=
+    '<div class="cond"><span class="'+(r.passScoreOK?"ok":"no")+'">'+(r.passScoreOK?"✓":"✕")+'</span><b>总分 ≥ '+CONFIG.passScore+'</b><span>'+r.score+' 分</span></div>'
+   +(CONFIG.corePassRate>0 ? ('<div class="cond"><span class="'+(r.passCoreOK?"ok":"no")+'">'+(r.passCoreOK?"✓":"✕")+'</span><b>必答区正确率 ≥ '+Math.round(CONFIG.corePassRate*100)+'%</b><span>'+r.coreRight+'/'+r.coreTotal+'（'+Math.round(r.coreRate*100)+'%）</span></div>') : '');
+
+  $("rTicket").className="ticket "+(r.passed?"pass":"fail");
+  $("rTicketTitle").textContent=r.passed?"通 关 凭 证":"差 一 点 记 录";
+  $("rNick").textContent=r.nick;
+  $("rDetail").textContent=r.score+" 分 · 答对 "+r.right+"/"+r.total+" 题";
+  $("rCore").textContent=r.coreRight+"/"+r.coreTotal+"（"+Math.round(r.coreRate*100)+"%）";
+  if($("rCoreRow")) $("rCoreRow").style.display=(CONFIG.corePassRate>0)?"":"none";
+  $("rTime").textContent=fmtTime(r.now);
+  $("rCode").textContent=r.code;
+
+  const wl=$("rWrong"); wl.innerHTML="";
+  if(!r.passed&&CONFIG.showExplain&&r.wrongs.length){
+    const h=document.createElement("h2");
+    h.textContent="错题复盘（"+r.wrongs.length+" 道）—— 都给你写清楚为什么了";
+    h.style.margin="24px 0 12px";
+    wl.appendChild(h);
+    r.wrongs.forEach(function(w){
+      const d=document.createElement("div");
+      d.className="wrong";
+      d.innerHTML='<div class="wsec"></div><div class="wq"></div>'
+        +'<div class="wline">你的答案：<em></em></div>'
+        +'<div class="wline">正确答案：<u></u></div>'
+        +((w._explain||w.q.explain)?'<div class="exp"></div>':'');
+      d.querySelector(".wsec").textContent=w.q.sec+(w.q.core===false?" · 非必答":"");
+      d.querySelector(".wq").textContent=w.q.q;
+      const mineTxt=(w._mineText!==undefined)?w._mineText:(w.mine?w.mine:"（未作答）");
+      const std=(w._stdText!==undefined)?w._stdText:((w.q.type==="fill")
+        ? (w.q.accept[0]||"")
+        : w.q.correct.map(function(k){ return w.q.opts[k]?w.q.opts[k].text:""; }).join(" / "));
+      const expTxt=(w._explain!==undefined)?w._explain:(w.q.explain||"");
+      d.querySelector(".wline em").textContent=mineTxt;
+      d.querySelector(".wline u").textContent=std;
+      if(expTxt) d.querySelector(".exp").innerHTML="<b>解析：</b>"+expTxt;
+      wl.appendChild(d);
+    });
+  }
+
+  $("rTip").innerHTML=r.passed
+    ? "<b>接下来：</b>把上面这张凭证<b>截图发到群里</b>，管理员核对凭证码就放你进来。凭证码是唯一凭据，别转给别人——转了他人的成绩也进不来。"
+    : "<b>别慌：</b>群规的用途是让大家少踩坑，不是卡人。上面每道错题都写了依据，看一遍再考。"+(CONFIG.allowRetry?"点下面的「重新答题」就行，考多少次都可以。":"");
+  $("btnRetry").style.display=(CONFIG.allowRetry&&!r.passed)?"":"none";
+
+  const hist=STORE.get("quiz_hist",[]);
+  $("rHist").innerHTML=hist.length>1?("本机答题记录："+hist.slice(-4).map(function(h){ return h.time.slice(5)+" "+h.score+"分"; }).join(" · ")):"";
+}
+
+function copyTicket(){
+  const r=S.result;
+  const txt=(r.passed?"【"+CONFIG.groupName+"·群规测验 通关凭证】":"【"+CONFIG.groupName+"·群规测验 未通过】")
+    +"\n昵称："+r.nick+"\n成绩："+r.score+" 分（答对 "+r.right+"/"+r.total+"）"
+    +(CONFIG.corePassRate>0 ? ("\n必答区："+r.coreRight+"/"+r.coreTotal+"（"+Math.round(r.coreRate*100)+"%）") : "")
+    +"\n时间："+fmtTime(r.now)+"\n凭证码："+r.code;
+  const done=function(){ toast("已复制，去群里粘贴吧"); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(function(){ fallbackCopy(txt,done); }); }
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,cb){
+  const ta=document.createElement("textarea");
+  ta.value=txt; ta.style.cssText="position:fixed;top:-9999px;opacity:0";
+  document.body.appendChild(ta); ta.select();
+  try{ if(document.execCommand("copy")){ cb(); } else { toast("复制失败，请手动截图"); } }catch(e){ toast("复制失败，请手动截图"); }
+  document.body.removeChild(ta);
+}
+
+$("btnStart").onclick=startQuiz;
+$("nick").addEventListener("keydown",function(e){ if(e.key==="Enter") startQuiz(); });
+$("btnNext").onclick=function(){
+  const q=S.list[S.idx];
+  if(q.type==="fill"){ if((S.answers[S.idx][0]||"").trim()===""){ toast("请先填写答案"); return; } goNext(); return; }
+  if(S.answers[S.idx].length===0){ toast("请先选择一个答案"); return; }
+  goNext();
+};
+$("btnPrev").onclick=function(){ if(S.idx>0){ S.idx--; render(); } };
+$("btnSheet").onclick=openSheet;
+$("btnSheetClose").onclick=closeSheet;
+$("mask").onclick=closeSheet;
+$("btnCopy").onclick=copyTicket;
+$("btnRetry").onclick=function(){
+  $("screen-result").classList.remove("active");
+  $("screen-start").classList.add("active");
+  window.scrollTo(0,0);
+  initStart();
+};
+
+/* ================================================================
+   特效增强层 —— 不改动原有逻辑，只在外面套一层「手感」
+     · Web Audio 合成音效（零音频文件）
+     · 答对/答错即时反馈（本地模式能判分时）
+     · 连击 COMBO、粒子爆炸、彩带雨、屏幕震动
+     · 分数滚动、按钮涟漪、首页浮动装饰
+   ================================================================ */
+(function () {
+  "use strict";
+
+  /* ---------------- 音效（纯代码合成，不需要任何音频文件） ---------------- */
+  var SFX = (function () {
+    var ctx = null, muted = false;
+    function ensure() {
+      if (muted) return null;
+      try {
+        if (!ctx) {
+          var AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) { muted = true; return null; }
+          ctx = new AC();
+        }
+        if (ctx.state === "suspended") ctx.resume();
+        return ctx;
+      } catch (e) { muted = true; return null; }
+    }
+    function tone(freq, dur, type, delay, vol) {
+      var c = ensure(); if (!c) return;
+      var t0 = c.currentTime + (delay || 0);
+      var osc = c.createOscillator(), g = c.createGain();
+      osc.type = type || "sine";
+      osc.frequency.setValueAtTime(freq, t0);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.linearRampToValueAtTime(vol || 0.1, t0 + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g); g.connect(c.destination);
+      osc.start(t0); osc.stop(t0 + dur + 0.03);
+    }
+    function sweep(f1, f2, dur, type, vol) {
+      var c = ensure(); if (!c) return;
+      var t0 = c.currentTime;
+      var osc = c.createOscillator(), g = c.createGain();
+      osc.type = type || "sine";
+      osc.frequency.setValueAtTime(f1, t0);
+      osc.frequency.exponentialRampToValueAtTime(Math.max(1, f2), t0 + dur);
+      g.gain.setValueAtTime(vol || 0.1, t0);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g); g.connect(c.destination);
+      osc.start(t0); osc.stop(t0 + dur + 0.03);
+    }
+    return {
+      init: ensure,
+      select: function () { tone(680, 0.07, "triangle", 0, 0.07); },
+      correct: function () { tone(880, 0.09, "sine", 0, 0.09); tone(1318.5, 0.16, "sine", 0.075, 0.08); },
+      wrong: function () { sweep(220, 110, 0.26, "square", 0.06); tone(150, 0.18, "sawtooth", 0.02, 0.05); },
+      combo: function (n) { tone(660 + Math.min(n, 8) * 90, 0.1, "triangle", 0, 0.08); },
+      win: function () { [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) { tone(f, 0.26, "sine", i * 0.11, 0.09); }); },
+      lose: function () { [392, 329.63, 261.63].forEach(function (f, i) { tone(f, 0.28, "triangle", i * 0.14, 0.07); }); },
+      tick: function () { tone(1200, 0.04, "square", 0, 0.03); }
+    };
+  })();
+
+  /* ---------------- 特效层 ---------------- */
+  var LAYER = null;
+  function fxLayer() {
+    if (!LAYER) {
+      LAYER = document.createElement("div");
+      LAYER.className = "fx-layer";
+      document.body.appendChild(LAYER);
+    }
+    return LAYER;
+  }
+  function burstAt(x, y, emojis, n) {
+    var L = fxLayer();
+    for (var i = 0; i < (n || 10); i++) {
+      var s = document.createElement("span");
+      s.className = "fx-particle";
+      var pick = emojis[(Math.random() * emojis.length) | 0];
+      if(String(pick).indexOf("img:") === 0){
+        var im = document.createElement("img");
+        im.src = pick.slice(4);
+        im.style.cssText = "width:20px;height:20px;display:block";
+        s.appendChild(im);
+      } else { s.textContent = pick; }
+      s.style.left = x + "px";
+      s.style.top = y + "px";
+      var ang = Math.random() * Math.PI * 2, d = 70 + Math.random() * 120;
+      s.style.setProperty("--dx", (Math.cos(ang) * d).toFixed(1) + "px");
+      s.style.setProperty("--dy", (Math.sin(ang) * d - 40).toFixed(1) + "px");
+      s.style.setProperty("--rot", ((Math.random() * 720 - 360) | 0) + "deg");
+      s.style.fontSize = (16 + Math.random() * 16).toFixed(0) + "px";
+      L.appendChild(s);
+      (function (node) { setTimeout(function () { node.remove(); }, 950); })(s);
+    }
+  }
+  function burstCenter(emojis, n) { burstAt(window.innerWidth / 2, window.innerHeight * 0.36, emojis, n || 12); }
+
+  function confetti(n) {
+    var L = fxLayer();
+    var colors = ["#f43f5e", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6"];
+    for (var i = 0; i < (n || 70); i++) {
+      var c = document.createElement("i");
+      c.className = "confetti";
+      c.style.left = (Math.random() * 100).toFixed(1) + "vw";
+      c.style.background = colors[(Math.random() * colors.length) | 0];
+      c.style.width = (6 + Math.random() * 6).toFixed(0) + "px";
+      c.style.height = (10 + Math.random() * 12).toFixed(0) + "px";
+      c.style.animationDelay = (Math.random() * 0.9).toFixed(2) + "s";
+      c.style.animationDuration = (1.7 + Math.random() * 1.5).toFixed(2) + "s";
+      L.appendChild(c);
+      (function (node) { setTimeout(function () { node.remove(); }, 3900); })(c);
+    }
+  }
+
+  function quakeScreen() {
+    var app = document.getElementById("app");
+    if (!app) return;
+    app.classList.remove("quake");
+    void app.offsetWidth;
+    app.classList.add("quake");
+    setTimeout(function () { app.classList.remove("quake"); }, 420);
+  }
+
+  function flashBar() {
+    var t = document.querySelector(".track");
+    if (!t) return;
+    t.classList.remove("flash");
+    void t.offsetWidth;
+    t.classList.add("flash");
+    setTimeout(function () { t.classList.remove("flash"); }, 620);
+  }
+
+  function showCombo(n) {
+    var el = document.createElement("div");
+    el.className = "combo";
+    el.textContent = "COMBO x" + n + (n >= 6 ? " 🔥🔥🔥" : n >= 4 ? " 🔥🔥" : " 🔥");
+    document.body.appendChild(el);
+    SFX.combo(n);
+    setTimeout(function () { el.remove(); }, 1020);
+    if (n >= 5) rainbowFx();
+  }
+
+  function rainbowFx() {
+    var d = document.createElement("div");
+    d.className = "rainbow";
+    document.body.appendChild(d);
+    setTimeout(function () { d.remove(); }, 1750);
+  }
+
+  /* ---------------- 分数滚动 ---------------- */
+  function countUp(el, to) {
+    var t0 = performance.now(), dur = 720;
+    function step(t) {
+      var p = Math.min(1, (t - t0) / dur);
+      var e = 1 - Math.pow(1 - p, 3);
+      el.innerHTML = Math.round(to * e) + "<small>分</small>";
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ---------------- 本地判分（拿不到答案时返回 null） ---------------- */
+  function localCheck() {
+    var q = S.list[S.idx], a = S.answers[S.idx];
+    if (!q || !a) return null;
+    if (q.type === "fill") {
+      var txt = (a[0] || "").trim();
+      return txt ? matchFill(txt, q.accept) : null;
+    }
+    if (!q.correct || !q.correct.length) return null;   /* 服务端模式：答案不在前端 */
+    if (!a.length) return null;
+    return a.slice().sort().join(",") === q.correct.slice().sort().join(",");
+  }
+
+  /* ---------------- 切换下一题（带滑入动画） ---------------- */
+  function advance() {
+    if (S.idx === S.list.length - 1) { submit(); return; }
+    var card = document.querySelector("#screen-quiz .card");
+    if (card) { card.style.animation = "none"; void card.offsetWidth; card.style.animation = ""; }
+    S.idx++;
+    render();
+  }
+
+  /* ---------------- 连击状态 ---------------- */
+  var combo = 0;
+
+  /* ---------------- 覆盖「下一题 / 交卷」 ---------------- */
+  function confirmNext() {
+    var q = S.list[S.idx];
+    if (!q) return;
+    if (q.type === "fill") {
+      if (!((S.answers[S.idx][0] || "").trim())) { toast("先填空呀"); return; }
+    } else if (!S.answers[S.idx].length) {
+      toast("先选一个"); quakeScreen(); return;
+    }
+
+    var ok = localCheck();
+
+    if (ok === null) {            /* 服务端模式或无法判分：直接过 */
+      SFX.select();
+      advance();
+      return;
+    }
+
+    var opts = [].slice.call(document.querySelectorAll("#qOpts .opt"));
+    var chosen = S.answers[S.idx];
+    opts.forEach(function (el, i) {
+      if (chosen.indexOf(i) !== -1) el.classList.add(ok ? "correct" : "wrong");
+      else if (!ok && q.correct.indexOf(i) !== -1) el.classList.add("correct");   /* 答错时亮出正确答案 */
+    });
+
+    if (ok) {
+      combo++;
+      SFX.correct();
+      flashBar();
+      var rect = opts[chosen[0]] ? opts[chosen[0]].getBoundingClientRect() : null;
+      if (rect) burstAt(rect.left + rect.width / 2, rect.top + rect.height / 2, ["img:./素材/ball.png", "img:./素材/ball.png", "⭐", "🎉", "💯", "🔥"], 12);
+      if (navigator.vibrate) { try { navigator.vibrate(28); } catch (e) {} }
+      if (combo >= 2) showCombo(combo);
+      setTimeout(advance, 640);
+    } else {
+      combo = 0;
+      SFX.wrong();
+      quakeScreen();
+      if (navigator.vibrate) { try { navigator.vibrate([45, 45, 90]); } catch (e) {} }
+      setTimeout(advance, 1080);
+    }
+  }
+
+  document.getElementById("btnNext").onclick = function () { SFX.init(); confirmNext(); };
+  document.getElementById("btnPrev").onclick = function () { SFX.tick(); if (S.idx > 0) { S.idx--; render(); } };
+
+  /* 开始答题时清空连击 */
+  var _start = document.getElementById("btnStart");
+  var _origStart = _start.onclick;
+  _start.onclick = function () { combo = 0; SFX.init(); if (_origStart) _origStart(); };
+
+  /* ---------------- 结果页特效（包装 showResult） ---------------- */
+  var _origShowResult = showResult;
+  showResult = function () {
+    _origShowResult.apply(this, arguments);
+    var r = S.result;
+    if (!r) return;
+    var sc = document.getElementById("rScore");
+    if (sc) countUp(sc, r.score);
+    if (r.passed) {
+      SFX.win();
+      confetti(r.score >= 90 ? 120 : 75);
+      if (r.right === r.total) { rainbowFx(); setTimeout(rainbowFx, 700); }
+      setTimeout(function () { burstAt(window.innerWidth * 0.5, window.innerHeight * 0.15, ["⭐", "✨", "🎉", "🏆", "💯"], 16); }, 260);
+      setTimeout(function () { burstAt(window.innerWidth * 0.22, window.innerHeight * 0.34, ["🎊", "✨"], 8); }, 620);
+      setTimeout(function () { burstAt(window.innerWidth * 0.78, window.innerHeight * 0.34, ["🎉", "⭐"], 8); }, 780);
+    } else {
+      SFX.lose();
+    }
+  };
+
+  /* ---------------- 点击涟漪 ---------------- */
+  document.addEventListener("pointerdown", function (e) {
+    var b = e.target && e.target.closest ? e.target.closest(".btn") : null;
+    if (!b) return;
+    b.classList.remove("tap");
+    void b.offsetWidth;
+    b.classList.add("tap");
+  }, true);
+  document.addEventListener("pointerdown", function () { SFX.init(); }, { once: true });
+
+  /* ---------------- 首页浮动装饰 ---------------- */
+  function decorateHero() {
+    var hero = document.querySelector("#screen-start .hero");
+    if (!hero || hero.querySelector(".floaty")) return;
+    ["📻", "📡", "🎧", "🛰️", "📶"].forEach(function (e, i) {
+      var s = document.createElement("span");
+      s.className = "floaty";
+      s.textContent = e;
+      s.style.left = (4 + i * 21) + "%";
+      s.style.top = (i % 2 ? 62 : 18) + "%";
+      s.style.animationDelay = (i * 0.55).toFixed(2) + "s";
+      hero.appendChild(s);
+    });
+  }
+  decorateHero();
+  var _is = initStart;
+  initStart = function () { _is.apply(this, arguments); decorateHero(); };
+
+  /* ---------------- 答题卡里的跳题也加个音效 ---------------- */
+  var grid = document.getElementById("cardGrid");
+  if (grid) {
+    grid.addEventListener("click", function () { SFX.tick(); }, true);
+  }
+
+})();
+
+
+/* ============ 运球小人 / 24 号（梗的符号版，可换成真图） ============ */
+(function(){
+  "use strict";
+
+  /* ---- 进度条小人 ---- */
+  function buildDribbler(){
+    var el = document.getElementById("dribbler");
+    if(!el) return;
+    if(CONFIG.progressImage){
+      el.innerHTML = '<img src="'+CONFIG.progressImage+'" alt="">';
+      return;
+    }
+    el.innerHTML =
+      '<svg viewBox="0 0 44 44">'
+      + '<g class="dw-body">'
+      +   '<circle cx="20" cy="9" r="6" fill="#1e293b"/>'
+      +   '<rect x="15" y="15" width="10" height="13" rx="3" fill="#4f46e5"/>'
+      +   '<rect class="dw-leg1" x="15" y="27" width="4" height="11" rx="2" fill="#1e293b" style="transform-origin:17px 28px"/>'
+      +   '<rect class="dw-leg2" x="21" y="27" width="4" height="11" rx="2" fill="#1e293b" style="transform-origin:23px 28px"/>'
+      + '</g>'
+      + '<circle class="dw-ball" cx="34" cy="28" r="6" fill="#f97316" stroke="#7c2d12" stroke-width="1.6"/>'
+      + '<path class="dw-ball" d="M34 22v12M28 28h12" stroke="#7c2d12" stroke-width="1.2" fill="none" opacity=".7"/>'
+      + '</svg>';
+  }
+
+  function moveDribbler(){
+    var el = document.getElementById("dribbler");
+    if(!el) return;
+    if(!S.list || !S.list.length){ el.style.left = "0%"; return; }
+    var pct = S.idx / S.list.length;
+    el.style.left = (pct * 100).toFixed(2) + "%";
+  }
+
+  buildDribbler();
+  moveDribbler();
+
+  /* 每次渲染跟着进度走 */
+  var _r = render;
+  render = function(){
+    _r.apply(this, arguments);
+    if(!document.getElementById("dribbler")) buildDribbler();
+    moveDribbler();
+  };
+
+  var _s = startQuiz;
+  startQuiz = function(){
+    _s.apply(this, arguments);
+    buildDribbler();
+    moveDribbler();
+  };
+
+  /* ---- 失败界面：24 号 ---- */
+  var _sr = showResult;
+  showResult = function(){
+    _sr.apply(this, arguments);
+    var r = S.result;
+    if(!r) return;
+    var seal = document.getElementById("rSeal");
+    if(!seal) return;
+    if(!r.passed){
+      seal.classList.add("jersey");
+      if(CONFIG.failImage){
+        seal.innerHTML = '<span class="jersey-wrap"><img src="'+CONFIG.failImage+'" alt=""></span>';
+      } else {
+        seal.innerHTML = '<span class="jersey-num">24</span>';
+      }
+    } else {
+      seal.classList.remove("jersey");
+    }
+  };
+})();
+
+if(REMOTE_SID){ loadRemote(); } else { initStart(); }
+</script>
+</body>
+</html>
