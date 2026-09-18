@@ -2,7 +2,7 @@
    用法：node 生成校对清单.js
    改完题目后跑一次，清单自动同步，不用手工维护。 */
 const fs = require('fs');
-const DIR = 'C:/Users/辰苇/group-rules-quiz/';
+const DIR = __dirname + '/';
 const html = fs.readFileSync(DIR + '群规问卷.html', 'utf8');
 
 const m = html.match(/const QUESTIONS = (\[[\s\S]*?\n\]);/);
